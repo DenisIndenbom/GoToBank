@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  done
+  pending
+  blocked
+  cancelled
+}
+
+enum Type {
+  transfer
+  payment
+  emission
+  commission
+}
+
+model Account {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  created_at    DateTime @default(now())
+  ban           Boolean  @default(false)
+  trading_token String
+
+  in_transactions  Transaction[] @relation("in_transactions")
+  out_transactions Transaction[] @relation("out_transactions")
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  from_id     Int?
+  to_id       Int?
+  amount      Float
+  created_at  DateTime @default(now()) @db.Timestamp
+  type        Type
+  description String
+  status      Status
+
+  from Account? @relation(name: "out_transactions", fields: [from_id], references: [id])
+  to   Account? @relation(name: "in_transactions", fields: [to_id], references: [id])
+  code Code?
+}
+
+model Code {
+  transaction_id Int      @unique
+  code           Int
+  expires_at     DateTime
+  attempts       Int
+
+  transaction Transaction @relation(fields: [transaction_id], references: [id])
+}
+
+model session {
+  sid    String   @unique
+  sess   Json
+  expire DateTime
+}
