@@ -324,6 +324,9 @@ async function verify_payment(transaction_id, code) {
     if (!transaction)
         throw error('transaction_not_exist', `Transaction doesn't exist`)
 
+    if (transaction.type != 'payment')
+        throw error('invalid_transaction_id', 'Invalid transaction ID is specified')
+    
     if (transaction.status === 'cancelled')
         throw error('transaction_cancelled', `The transaction has been cancelled`)
 

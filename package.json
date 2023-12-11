@@ -21,6 +21,8 @@
     "express-session": "^1.17.3",
     "highlight.js": "^11.9.0",
     "markdown-it": "^14.0.0",
+    "markdown-it-classy": "^0.2.0",
+    "markdown-it-style": "^1.0.0",
     "moment": "^2.29.4",
     "nunjucks": "^3.2.4",
     "rand-token": "^1.0.1"
