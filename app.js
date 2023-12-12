@@ -69,6 +69,21 @@ app.use('/account', authHandler, accountRouter)
 app.use('/docs', docsRouter)
 app.use('/', mainRouter)
 
+// handle 404
+app.use(function (req, res, next) {
+    res.status(404)
+    // respond with html page
+    if (req.accepts('html')) {
+        return res.render('404.html', { base: 'base.html' })
+    }
+    // respond with json
+    if (req.accepts('json')) {
+        return res.json({ state:'error', code: 'not_found', error: 'Not found' })
+    }
+    // default to plain-text. send()
+    return res.type('txt').send('Not found')
+})
+
 app.listen(port)
 
 console.log("GoToBank Server listening on port:", port)
