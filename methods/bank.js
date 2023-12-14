@@ -158,14 +158,18 @@ async function get_codes(account_id) {
 }
 
 /**
- * Get the account's transaction history.
+ * Get the account's transactions.
  * 
  * @param {int} account_id - The id of account
+ * @param {int} [offset=0] - offset in db
+ * @param {int} [limit=50] - max size of the returned array
  * @returns {Array} Array of transactions
  * @throws An error if values are not set
  */
-async function transaction_history(account_id) {
+async function get_transactions(account_id, offset=0, limit=25) {
     const transactions = await prisma.transaction.findMany({
+        skip: offset >= 0 ? offset : 0,
+        take: limit > 0 ? limit : 1,
         where: {
             OR: [
                 { from_id: account_id },
@@ -436,8 +440,8 @@ module.exports = {
     get_accounts: get_accounts,
     get_account: get_account,
     get_transaction: get_transaction,
+    get_transactions: get_transactions,
     get_codes: get_codes,
-    transaction_history: transaction_history,
     balance: balance,
     transfer: transfer,
     payment: payment,

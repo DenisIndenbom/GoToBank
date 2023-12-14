@@ -3,50 +3,6 @@
   <div class="row d-flex justify-content-center align-items-center h-100">
     <div class="col col-xl-8">
       <div class="card my-2 mb-2">
-        <div class="card-body">
-          <h5 class="card-title">Account ID: {{ id }}</h5>
-          <p class="small mb-0">Баланс: {{ balance }} gt</p>
-          <p class="small mb-0">Создан: {{ created_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</p>
-        </div>
-        <div class="card-footer">
-          <details>
-            <summary>Токен</summary>
-            <code>{{ token }}</code>
-          </details>
-        </div>
-      </div>
-      <div class="card my-2 mb-2">
-        <div class="card-header">
-          <h5>Коды подтверждения</h5>
-        </div>
-        <div class="card-body overflow-auto">
-          {% if codes.length > 0 %}
-            <table class="table table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">ID транзакции</th>
-                  <th scope="col">Код подтверждения</th>
-                  <th scope="col">Истекает в</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in codes %}
-                  <tr>
-                    <th scope="row">{{ row.code.transaction_id }}</th>
-                    <td>
-                      <code>{{ row.code.code }}</code>
-                    </td>
-                    <td>{{ row.code.expires_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% else %}
-            <div class="text-secondary text-center">Кодов подтверждения пока нет.</div>
-          {% endif %}
-        </div>
-      </div>
-      <div class="card my-2 mb-2">
         <div class="card-header">
           <h5>Транзакции</h5>
         </div>
@@ -100,7 +56,19 @@
                 {% endfor %}
               </tbody>
             </table>
-            <div class="text-center"><a class="btn btn-primary" href="/account/transactions">Полная история транзакций</a></div>
+            <nav>
+              <ul class="pagination justify-content-center">
+                <li class="page-item {% if prev <= 0 %}disabled{% endif %}">
+                  <a class="page-link" href="/account/transactions?page={{ prev }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">{{ current }}</a>
+                </li>
+                <li class="page-item {% if next <= 0 %}disabled{% endif %}">
+                  <a class="page-link" href="/account/transactions?page={{ next }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                </li>
+              </ul>
+            </nav>
           {% else %}
             <div class="text-secondary text-center">Транзакций пока нет.</div>
           {% endif %}
