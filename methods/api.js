@@ -1,6 +1,5 @@
 const prisma = require('../lib/prisma')
 
-
 /**
 * Checks if the request is authenticated and if it is sets the client account to be used for the request
 * 
@@ -13,7 +12,7 @@ const prisma = require('../lib/prisma')
 async function reqAuth(req, res, next) {
     // If the token is not found return 401. json
     if (!req.headers.authorization)
-        return res.status(401).json({ error: "Token not found." })
+        return res.status(401).json({ state: "error", error: "Token not found." })
 
     const account = await prisma.account.findFirst({
         where: {
@@ -26,7 +25,7 @@ async function reqAuth(req, res, next) {
         req.body.client_account = account
         return next()
     }
-    else return res.status(401).json({ error: "The token is invalid or the account is blocked." })
+    else return res.status(401).json({ state: "error", error: "The token is invalid or the account is blocked." })
 }
 
 /**

@@ -24,6 +24,7 @@
     "markdown-it-classy": "^0.2.0",
     "markdown-it-style": "^1.0.0",
     "moment": "^2.29.4",
+    "node-telegram-bot-api": "^0.64.0",
     "nunjucks": "^3.2.4",
     "rand-token": "^1.0.1"
   }
