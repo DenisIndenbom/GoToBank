@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router() // Instantiate a new router
 
 const bank = require('../methods/bank.js')
+const tg_tools = require('../methods/tg_tools.js')
 const validate = require('../methods/api.js').validate
 
 // Rule definition for verifying transactions. This is a list of rules that are used to verify transactions
@@ -33,6 +34,11 @@ router.post('/transfer', async function (req, res) {
 
     try {
         const transaction = await bank.transfer(account.id, to_id, amount, description)
+
+        // send notification
+        const telegram = await bank.get_telegram(transaction.to_id)
+        tg_tools.transaction_notification(telegram, transaction)
+
         return res.json({ state: 'success', transaction: transaction })
     }
     catch (error) {
@@ -56,8 +62,13 @@ router.post('/payment', async function (req, res) {
     const description = req.body.description
 
     try {
-        const payment = await bank.payment(from_id, account.id, amount, description)
-        return res.json({ state: 'success', transaction: payment.transaction })
+        const transaction = await bank.payment(from_id, account.id, amount, description)
+
+        // send notification
+        const telegram = await bank.get_telegram(transaction.to_id)
+        tg_tools.code_notification(telegram, transaction)
+
+        return res.json({ state: 'success', transaction: transaction.transaction })
     }
     catch (error) {
         return res.status(400).json({ state: 'error', code: error.code, error: error.message })
@@ -65,6 +76,8 @@ router.post('/payment', async function (req, res) {
 })
 
 router.post('/verify', async function (req, res) {
+    const account = req.body.client_account
+
     // validate arguments
     const result = validate(req.body, verify_rule)
 
@@ -77,7 +90,13 @@ router.post('/verify', async function (req, res) {
     const code = req.body.code
 
     try {
-        const status = await bank.verify_payment(transaction_id, code)
+        const status = await bank.verify_payment(account.id, transaction_id, code)
+        const transaction = await bank.get_transaction(transaction_id)
+
+        // send notification
+        const telegram = await bank.get_telegram(payment.to_id)
+        tg_tools.transaction_notification(telegram, transaction)
+
         return res.json({ state: 'success', status: status })
     }
     catch (error) {

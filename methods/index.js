@@ -7,5 +7,4 @@ module.exports = {
     auth: is_auth.auth,
     notAuth: is_auth.notAuth,
     reqAuth: api.reqAuth,
-    bank: bank
 }

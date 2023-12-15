@@ -30,6 +30,15 @@ model Account {
 
   in_transactions  Transaction[] @relation("in_transactions")
   out_transactions Transaction[] @relation("out_transactions")
+  telegram         Telegram?
+}
+
+model Telegram {
+  account_id  Int     @unique
+  telegram_id Int     @unique
+  enabled     Boolean @default(true)
+
+  account Account? @relation(fields: [account_id], references: [id])
 }
 
 model Transaction {
