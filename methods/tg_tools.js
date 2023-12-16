@@ -4,7 +4,7 @@ const tgbot = require('../lib/telegram_bot.js')
 /**
 * Send notification about transaction.
 *
-* @param {object} telegram - account telegram data
+* @param {object} telegram - The recipient of the notification in the telegram
 * @param {object} transaction - Transaction data
 */
 async function transaction_notification(telegram, transaction) {
@@ -35,18 +35,15 @@ async function transaction_notification(telegram, transaction) {
 /**
 * Send code notification about verify code.
 * 
-* @param {object} telegram - account telegram data
+* @param {object} telegram - The recipient of the notification in the telegram
 * @param {object} transaction - Transaction data
+* @param {object} code - The confirm code of payment transaction
 */
-async function code_notification(telegram, transaction) {
+async function code_notification(telegram, transaction, code) {
     if (!telegram) return
 
-    const message = `
-    Запрос ${transaction.amount} gt - ${transaction.description}
+    const message = `Запрос ${transaction.amount} gt - ${transaction.description}\n\nКод подтверждения: ${code.code}`
 
-    Код подтверждения: ${transaction.code.code}
-    `
-    
     try {await tgbot.sendMessage(telegram.telegram_id, message)}
     catch (error) { }
 }

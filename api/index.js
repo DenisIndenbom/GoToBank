@@ -62,13 +62,13 @@ router.post('/payment', async function (req, res) {
     const description = req.body.description
 
     try {
-        const transaction = await bank.payment(from_id, account.id, amount, description)
+        const payment = await bank.payment(from_id, account.id, amount, description)
 
         // send notification
-        const telegram = await bank.get_telegram(transaction.to_id)
-        tg_tools.code_notification(telegram, transaction)
+        const telegram = await bank.get_telegram(payment.to_id)
+        tg_tools.code_notification(telegram, payment.transaction, payment.code)
 
-        return res.json({ state: 'success', transaction: transaction.transaction })
+        return res.json({ state: 'success', transaction: payment.transaction })
     }
     catch (error) {
         return res.status(400).json({ state: 'error', code: error.code, error: error.message })
@@ -91,11 +91,13 @@ router.post('/verify', async function (req, res) {
 
     try {
         const status = await bank.verify_payment(account.id, transaction_id, code)
-        const transaction = await bank.get_transaction(transaction_id)
 
-        // send notification
-        const telegram = await bank.get_telegram(payment.to_id)
-        tg_tools.transaction_notification(telegram, transaction)
+        // Send notification if status is done.
+        if (status === 'done') {
+            const transaction = await bank.get_transaction(transaction_id)
+            const telegram = await bank.get_telegram(transaction.from_id)
+            tg_tools.transaction_notification(telegram, transaction)
+        }
 
         return res.json({ state: 'success', status: status })
     }
