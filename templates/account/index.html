@@ -8,27 +8,23 @@
         </div>
         <div class="card-body clearfix">
           <div class="float-start">
-            <h5 class="card-title mb-3">Account ID: {{ id }}</h5>
+            <h5 class="card-title mb-3">Номер счёта: {{ id }}</h5>
             <div class="font-monospace">
-              <p class="card-subtitle mb-1">
+              <div class="mb-1">
                 Баланс: <strong class="text-success">{{ balance }}</strong> gt
-              </p>
-              {% if telegram %}
-                <p class="mb-1">
-                  Телеграм: <a class="link-info" href="/account/telegram">{{ telegram }}</a>
-                </p>
-              {% endif %}
-              <p class="mb-1">Создан: {{ created_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</p>
+              </div>
+              <div class="mb-1">Создан: {{ created_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</div>
             </div>
           </div>
           <div class="float-end">
-            {% if ban %}
-              <h5 class="mx-2 my-1"><span class="badge text-bg-danger">Banned</span></h5>
-            {% elif not telegram %}
-              <a href="/account/telegram" class="btn btn-primary btn-sm">Привязать телеграм</a>
-            {% endif %}
+            <a href="/account/telegram" class="btn btn-primary btn-sm">Уведомления</a>
           </div>
         </div>
+        {% if ban %}
+          <div class="mx-3 mb-2">
+            <div class="alert alert-danger" role="alert">Аккаунт заблокирован!</div>
+          </div>
+        {% endif %}
         <div class="card-footer">
           <details>
             <summary>Токен</summary>
