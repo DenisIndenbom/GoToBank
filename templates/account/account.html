@@ -1,0 +1,30 @@
+<div class="card my-2 mb-3">
+  <div class="card-header">
+    <h5>Информация об аккаунте</h5>
+  </div>
+  <div class="card-body clearfix">
+    <div class="float-start">
+      <h5 class="card-title mb-3">Номер счёта: {{ id }}</h5>
+      <div class="font-monospace">
+        <div class="mb-1">
+          Баланс: <strong class="text-success">{{ balance }}</strong> gt
+        </div>
+        <div class="mb-1">Создан: {{ created_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</div>
+      </div>
+    </div>
+    <div class="float-end">
+      <a href="/account/telegram" class="btn btn-primary btn-sm">Уведомления</a>
+    </div>
+  </div>
+  {% if ban %}
+    <div class="mx-3 mb-2">
+      <div class="alert alert-danger" role="alert">Аккаунт заблокирован!</div>
+    </div>
+  {% endif %}
+  <div class="card-footer">
+    <details>
+      <summary>Токен</summary>
+      <code>{{ token }}</code>
+    </details>
+  </div>
+</div>

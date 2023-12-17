@@ -1,0 +1,31 @@
+<div class="card my-2 mb-3">
+  <div class="card-header">
+    <h5>Коды подтверждения</h5>
+  </div>
+  <div class="card-body overflow-auto">
+    {% if codes.length > 0 %}
+      <table class="table table-bordered table-hover table-sm font-monospace">
+        <thead>
+          <tr>
+            <th scope="col">ID транзакции</th>
+            <th scope="col">Код подтверждения</th>
+            <th scope="col">Истекает в</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in codes %}
+            <tr>
+              <th scope="row">{{ row.code.transaction_id }}</th>
+              <td>
+                <code>{{ row.code.code }}</code>
+              </td>
+              <td>{{ row.code.expires_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="text-secondary text-center">Кодов подтверждения пока нет.</div>
+    {% endif %}
+  </div>
+</div>
