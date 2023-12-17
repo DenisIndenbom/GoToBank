@@ -1,0 +1,34 @@
+{% extends base %}
+{% block content %}
+  <div class="row d-flex justify-content-center align-items-center h-100">
+    <div class="col col-xl-8">
+      <div class="card my-2 mb-2">
+        <div class="card-header">Уведомления через Telegram</div>
+        <div class="card-body">
+          <div class="mb-4">
+            <h4>Как включить уведомления?</h4>
+            <ul>
+              <li>
+                Запустите телеграм бота <a href="https://t.me/gotobank_bot?start=" target="_blank">@gotobank_bot</a>
+              </li>
+              <li>Скопируйте свой telegram ID из сообщения, отправленного ботом</li>
+              <li>Вставьте свой ID в поле "Телеграм ID"</li>
+            </ul>
+          </div>
+          <div>
+            <form method="post">
+              <div class="mb-2">
+                <label>Телеграм ID</label>
+                <input class="form-control w-50" name="telegram_id" type="text" value="{{ telegram_id }}" required/>
+              </div>
+              <button class="btn btn-outline-primary" type="submit" formmethod="post">Сохранить</button>
+              {% if telegram_id %}
+              <button class="btn btn-outline-danger" formaction="telegram/delete">Удалить</button>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
