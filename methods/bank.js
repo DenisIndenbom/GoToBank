@@ -66,20 +66,20 @@ async function init_account(user_id) {
  * Get the accounts by user_id.
  *
  * @param {Number} user_id - The id of user
- * @param {boolean} transactions - Include transactions
+ * @param {boolean} include_transactions - Include transactions
  *
  * @returns {Array} Array of accounts
  * @throws An error if values are not set
  */
-async function get_accounts(user_id, transactions = false) {
+async function get_accounts(user_id, include_transactions = false) {
     const accounts = await prisma.account.findMany({
         where: {
             user_id: user_id
         },
         include: {
             telegram: true,
-            in_transactions: transactions,
-            out_transactions: transactions
+            in_transactions: include_transactions,
+            out_transactions: include_transactions
         }
     })
 
@@ -90,20 +90,20 @@ async function get_accounts(user_id, transactions = false) {
  * Get the account info.
  *
  * @param {Number} account_id - The id of account
- * @param {boolean} transactions - Include transactions
+ * @param {boolean} include_transactions - Include transactions
  *
  * @returns {Object} Info of the account
  * @throws An error if values are not set
  */
-async function get_account(account_id, transactions = false) {
+async function get_account(account_id, include_transactions = false) {
     const account = await prisma.account.findFirst({
         where: {
             id: account_id
         },
         include: {
             telegram: true,
-            in_transactions: transactions,
-            out_transactions: transactions
+            in_transactions: include_transactions,
+            out_transactions: include_transactions
         }
     })
 
@@ -131,22 +131,23 @@ async function get_telegram(account_id) {
  * Get the transaction info.
  * 
  * @param {Number} transaction_id - The id of transaction
+ * @param {boolean} include - Include relations
  * @returns {Object} Info of the transaction
  * @throws An error if values are not set
  */
-async function get_transaction(transaction_id) {
+async function get_transaction(transaction_id, include = true) {
     const transaction = await prisma.transaction.findFirst({
         where: {
             id: transaction_id
         },
         include: {
-            from: true,
-            to: {
+            from: include,
+            to: include ? {
                 include: {
                     telegram: true
                 }
-            },
-            code: true
+            } : false,
+            code: include
         }
     })
 

@@ -17,6 +17,39 @@ const verify_rule = [
     ['code', 'int', 'No code or it is not number']
 ]
 
+router.get('/account', async function (req, res) {
+    const account = req.body.client_account
+
+    return res.json({ state: 'success', account: { id: account.id, user_id: account.user_id, created_at: account.created_at } })
+})
+
+router.get('/balance', async function (req, res) {
+    const account = req.body.client_account
+
+    return res.json({ state: 'success', balance: await bank.balance(account.id) })
+})
+
+router.get('/codes', async function (req, res) {
+    const account = req.body.client_account
+
+    return res.json({ state: 'success', codes: await bank.get_codes(account.id) })
+})
+
+router.get('/transaction', async function (req, res) {
+    const account = req.body.client_account
+    const transaction_id = Number(req.query.id)
+
+    if (!transaction_id)
+        return res.status(422).json({ state: 'error', code: 'invalid_args', error: 'The url argument is missing in the request.' })
+
+    const transaction = await bank.get_transaction(transaction_id, false)
+
+    if (!transaction || (transaction.from_id != account.id && transaction.to_id != account.id))
+        return res.status(400).json({ state: 'error', code: 'transaction_not_exist', error: 'The transaction does not exist for you.' })
+
+    return res.json({ state: 'success', transaction: transaction })
+})
+
 router.post('/transfer', async function (req, res) {
     const account = req.body.client_account
 

@@ -29,6 +29,141 @@ json = {}
 res = requests.post(host + '/api/', headers=headers, json=json)
 ```
 
+## Информация об аккаунте
+```js
+GET /api/account
+```
+**Возвращаемые  параметры**
+```json
+{
+    "state": "success",
+    "account": 
+    {
+        "id": 1, // ID аккаунта
+        "user_id": 1, // ID пользовотеля в GoToID
+        "created_at": "2023-12-11 00:00:00" // Дата создания аккаунта
+    }
+}
+```
+
+Пример запроса на **python**
+```python
+import requests
+
+host = '<bank_host>'
+
+headers = {'authorization': ТОКЕН}
+
+res = requests.get(host + '/api/account', headers=headers)
+
+print(res.status_code)
+print(res.json())
+```
+
+## Баланс
+```js
+GET /api/balance
+```
+**Возвращаемые  параметры**
+```json
+{
+    "state": "success",
+    "balance": 0 // Сумма на счету, валюта готубли
+}
+```
+
+Пример запроса на **python**
+```python
+import requests
+
+host = '<bank_host>'
+
+headers = {'authorization': ТОКЕН}
+
+res = requests.get(host + '/api/balance', headers=headers)
+
+print(res.status_code)
+print(res.json())
+```
+
+## Коды подтверждения
+```js
+GET /api/codes
+```
+**Возвращаемые  параметры**
+```json
+{
+    "state": "success",
+    "codes": 
+    [
+     {
+        "code": // Структура "Код подтверждения"
+        { 
+            "transaction_id": 1, // ID транзакции
+            "code": 1111, // Код подтверждения
+            "expires_at": "2023-12-11 00:00:00", // Дата истечения действия кода
+            "attempts": 3 // Кол-во оставшихся попыток
+        }
+     },
+     // и т.д
+    ]
+}
+```
+
+Пример запроса на **python**
+```python
+import requests
+
+host = '<bank_host>'
+
+headers = {'authorization': ТОКЕН}
+
+res = requests.get(host + '/api/account', headers=headers)
+
+print(res.status_code)
+print(res.json())
+```
+
+## Транзакция
+```js
+GET /api/transaction?id=1 // ID запрашиваемой транзакции
+```
+
+**Важно**: данный метод возвращает транзакцию **относящуюся к вашему аккаунту**
+
+**Возвращаемые  параметры**
+```json
+{
+    "state": "success",
+    "transaction": // Структура "Транзакция"
+    {
+        "id": 1, // ID транзакции          
+        "from_id": 1, // Откуда (ID счёта отправителя)    
+        "to_id": 2, // Куда (ID счёта получателя)  
+        "amount": 10, // Размер переводимой суммы    
+        "created_at": "2023-12-11 00:00:00", // Дата и время проведения транзакции
+        "type": "<тип>", // Тип транзакции
+        "description": "Some description", // Описание транзакции
+        "status": "<статус>" // Статус транзакции
+    }
+}
+```
+
+Пример запроса на **python**
+```python
+import requests
+
+host = '<bank_host>'
+
+headers = {'authorization': ТОКЕН}
+transaction_id = ID ТРАНЗАКЦИИ
+
+res = requests.get(host + f'/api/transaction?id={transaction_id}', headers=headers)
+
+print(res.status_code)
+print(res.json())
+``` 
+
 ## Перевод средств
 ```js
 POST /api/transfer
@@ -41,11 +176,11 @@ POST /api/transfer
     "description": "Some description" // Описание транзакции
 }
 ```
-**Возращаемые параметры**
+**Возвращаемые  параметры**
 ```json
 {
     "state": "success",
-    "transaction": 
+    "transaction": // Структура "Транзакция"
     {
         "id": 1, // ID транзакции          
         "from_id": 1, // Откуда (ID счёта отправителя)    
@@ -91,11 +226,11 @@ POST /api/payment
     "description": "Some description" // Описание транзакции
 }
 ```
-**Возращаемые параметры**
+**Возвращаемые  параметры**
 ```json
 {
     "state": "success",
-    "transaction": 
+    "transaction": // Структура "Транзакция"
     {
         "id": 1, // ID транзакции          
         "from_id": 2, // Откуда (ID счёта покупателя)    
@@ -140,7 +275,7 @@ POST /api/verify
     "code": 1111, // Код подтверждения (от 1111 до 9999)
 }
 ```
-**Возращаемые параметры**
+**Возвращаемые  параметры**
 ```json
 {
     "state": "success",
@@ -171,30 +306,6 @@ res = requests.post(host + '/api/verify', headers=headers, json=json)
 print(res.status_code)
 print(res.json())
 ```
-## Транзакция
-Транзакция - это операция, которая включает в себя перевод средств между счетами или выполнение других финансовых операций.
-
-**Параметры тразакции**
-- `id` - ID транзакции
-- `from_id` - ID стороны отправителя
-- `to_id` - ID стороны получателя
-- `amount` - Сумма производимой транзакции
-- `created_at` - Дата создания
-- `type` - Тип производимой транзакции (`transfer`, `payment`, `emission`, `commission`)
-- `description` - Описание транзакции
-- `status` - Статут производимой транзакции (`done`, `pending`, `blocked`, `cancelled`)
-
-**Типы**
-- `transfer` - Перевод из счёта A в счёт B
-- `payment` - Оплата за услугу/товар - перевод из счёта A в счёт B
-- `emission` - Пополнение счёта A из вне
-- `commission` - Комиссия или штраф за операции
-
-**Статусы**
-- `done` - Транзакция совершена
-- `pending` - Транзакция на рассмотрении
-- `blocked` - Транзакция заблокирована
-- `cancelled` - Транзакция отменена
 
 ## Опсиание ошибок
 В случае ошибки возможны коды **400**, **404**, **422**, а тело ответа содержит JSON с описанием ошибки.
@@ -219,3 +330,40 @@ print(res.json())
 - `account_not_exist` - Аккаунта не существует
 - `account_blocked` - Аккаунт заблокирован
 - `insufficient_funds` - Недостаточно средств
+
+## Структуры
+В GoToBank API есть две основные структуры: **транзакция** и **код подтверждения**.
+
+### Транзакция
+**Транзакция** - это операция, которая включает в себя перевод средств между счетами или выполнение других финансовых операций.
+
+**Параметры тразакции**
+- `id` - ID транзакции
+- `from_id` - ID стороны отправителя
+- `to_id` - ID стороны получателя
+- `amount` - Сумма производимой транзакции
+- `created_at` - Дата создания
+- `type` - Тип производимой транзакции (`transfer`, `payment`, `emission`, `commission`)
+- `description` - Описание транзакции
+- `status` - Статут производимой транзакции (`done`, `pending`, `blocked`, `cancelled`)
+
+**Типы**
+- `transfer` - Перевод из счёта A в счёт B
+- `payment` - Оплата за услугу/товар - перевод из счёта A в счёт B
+- `emission` - Пополнение счёта A из вне
+- `commission` - Комиссия или штраф за операции
+
+**Статусы**
+- `done` - Транзакция совершена
+- `pending` - Транзакция на рассмотрении
+- `blocked` - Транзакция заблокирована
+- `cancelled` - Транзакция отменена
+
+### Код подтверждения
+**Код подтверждения** - это код, который служит для подтверждения платёжной транзакции. У кода есть **дата истечения** и **кол-во попыток** на подтверждение. Это нужно для обеспечение безопасноти подтверждения платёжной транзакции.
+
+**Параметры кода подтверждения**
+- `transaction_id` - ID транзакции
+- `code` - Код подтверждения (число от 1111 до 9999)
+- `expires_at` - Дата истечения действия кода
+- `attempts` - Кол-во оставшихся попыток
