@@ -40,7 +40,9 @@ function randint(min, max) {
  * Init new account if user don't have accounts.
  * 
  * @param {Number} user_id - user id
+ * 
  * @returns {boolean} Success or not
+ * 
  * @throws An error if values are not set
  */
 async function init_account(user_id) {
@@ -66,9 +68,10 @@ async function init_account(user_id) {
  * Get the accounts by user_id.
  *
  * @param {Number} user_id - The id of user
- * @param {boolean} include_transactions - Include transactions
+ * @param {boolean} include_transactions - Include transactions in sql request
  *
  * @returns {Array} Array of accounts
+ * 
  * @throws An error if values are not set
  */
 async function get_accounts(user_id, include_transactions = false) {
@@ -90,9 +93,10 @@ async function get_accounts(user_id, include_transactions = false) {
  * Get the account info.
  *
  * @param {Number} account_id - The id of account
- * @param {boolean} include_transactions - Include transactions
+ * @param {boolean} include_transactions - Include transactions in sql request
  *
  * @returns {Object} Info of the account
+ * 
  * @throws An error if values are not set
  */
 async function get_account(account_id, include_transactions = false) {
@@ -114,13 +118,17 @@ async function get_account(account_id, include_transactions = false) {
 * Get telegram info by account id. 
 * 
 * @param {Number} account_id - The id of the account
+* @param {boolean} include_account - Include account in sql request
 * 
 * @returns {object} The telegram info or null if not
 */
-async function get_telegram(account_id) {
+async function get_telegram(account_id, include_account = false) {
     const telegram = await prisma.telegram.findFirst({
         where: {
             account_id: account_id
+        },
+        include: {
+            account: include_account
         }
     })
 
@@ -132,7 +140,9 @@ async function get_telegram(account_id) {
  * 
  * @param {Number} transaction_id - The id of transaction
  * @param {boolean} include - Include relations
+ * 
  * @returns {Object} Info of the transaction
+ * 
  * @throws An error if values are not set
  */
 async function get_transaction(transaction_id, include = true) {
@@ -158,7 +168,9 @@ async function get_transaction(transaction_id, include = true) {
  * Get active verify codes of payment transactions by account id.
  * 
  * @param {Number} account_id - The id of account
+ * 
  * @returns {Array} Array of codes
+ * 
  * @throws An error if values are not set
  */
 async function get_codes(account_id) {
@@ -187,7 +199,9 @@ async function get_codes(account_id) {
  * @param {Number} account_id - The id of account
  * @param {Number} [offset=0] - offset in db
  * @param {Number} [limit=50] - max size of the returned array
+ * 
  * @returns {Array} Array of transactions
+ * 
  * @throws An error if values are not set
  */
 async function get_transactions(account_id, offset = 0, limit = 25) {
@@ -212,7 +226,9 @@ async function get_transactions(account_id, offset = 0, limit = 25) {
  * Get the account balance.
  * 
  * @param {Number} account_id - The id of account
+ * 
  * @returns {Number} The account balance
+ * 
  * @throws Throw error if account doesn't exist. Error code: account_not_exist
  */
 async function balance(account_id) {
@@ -237,7 +253,9 @@ async function balance(account_id) {
  * @param {Number} to_id - The id of transfer to account
  * @param {Number} amount - The amount of money being transferred
  * @param {string} description - Description of the transaction
+ * 
  * @returns {Object} Сompleted transaction
+ * 
  * @throws {Error} Throw error if account A transfers money to itself. Error code: invalid_transaction
  * @throws {Error} Throw error if account A or B don't exist. Error code: account_not_exist
  * @throws {Error} Throw error if there are not enough funds in the account. Error code: insufficient_funds
@@ -286,7 +304,9 @@ async function transfer(from_id, to_id, amount, description) {
  * @param {Number} to_id - The id of payment to account
  * @param {Number} amount - The amount of money being transferred
  * @param {string} description - Description of the transaction
+ * 
  * @returns {Object} Сompleted transaction and transaction code {transaction, code}
+ * 
  * @throws {Error} Throw error if account A transfers money to itself. Error code: invalid_transaction
  * @throws {Error} Throw error if account A or B don't exist. Error code: account_not_exist
  * @throws {Error} Throw error if your account is blocked. Error code: account_blocked
@@ -340,7 +360,9 @@ async function payment(from_id, to_id, amount, description) {
  * @param {Number} confirming_id - The id of confirming
  * @param {Number} transaction_id - The id of the transaction
  * @param {Number} code - The verify code of the transaction
+ * 
  * @returns {string} - Operation status (done, blocked, incorrect_code)
+ * 
  * @throws {Error} Throw error if transaction does not exist. Error code: transaction_not_exist
  * @throws {Error} Throw error if transaction is cancelled. Error code: transaction_cancelled
  * @throws {Error} Throw error if transaction is blocked. Error code: transaction_blocked
@@ -435,7 +457,9 @@ async function verify_payment(confirming_id, transaction_id, code) {
  * @param {Number} to_id - The id of emission to account
  * @param {Number} amount - The amount of money emission
  * @param {string} description - Description of the transaction
+ * 
  * @returns {Object} Сompleted transaction
+ * 
  * @throws {Error} Throw error if account A don't exist. Error code: account_not_exist
  * @throws {Error} Throw error if your account is blocked. Error code: account_blocked
  */
