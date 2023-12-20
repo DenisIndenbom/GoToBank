@@ -32,15 +32,14 @@ const methods = require('./methods')
 
 const accountRouter = require('./account')
 const docsRouter = require('./docs')
-const adminRouter = require('./admin')
 const mainRouter = require('./main')
 
 const apiRouter = require('./api')
-const reqAuth = methods.reqAuth
+const api_auth = methods.api.req_auth
 
 const authRouter = require('./auth')
-const auth = methods.auth
-const notAuth = methods.notAuth
+const auth = methods.is_auth.auth
+const not_auth = methods.is_auth.not_auth
 
 // some tools
 function authHandler(req, res, next) {
@@ -73,12 +72,11 @@ app.use(cors({ origin: true }))
 app.use('/static', express.static(__dirname + '/static'))
 
 // add routes
-app.use('/api', reqAuth, apiRouter)
-app.use('/auth', notAuth, authRouter)
+app.use('/api', api_auth, apiRouter)
+app.use('/auth', not_auth, authRouter)
 app.use('/logout', (req, res) => { req.session.destroy(); res.redirect('/') })
 app.use('/account', authHandler, accountRouter)
 app.use('/docs', docsRouter)
-app.use('/admin', adminRouter)
 app.use('/', mainRouter)
 
 // handle 404

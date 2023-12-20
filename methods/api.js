@@ -9,7 +9,7 @@ const prisma = require('../lib/prisma')
 * 
 * @return {Object} The response object that is being sent to the
 */
-async function reqAuth(req, res, next) {
+async function req_auth(req, res, next) {
     // If the token is not found return 401. json
     if (!req.headers.authorization)
         return res.status(401).json({ state: "error", error: "Token not found." })
@@ -70,6 +70,6 @@ function validate(data, rules) {
 }
 
 module.exports = {
-    reqAuth: reqAuth,
+    req_auth: req_auth,
     validate: validate
 }

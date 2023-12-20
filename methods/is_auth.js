@@ -26,7 +26,7 @@ async function auth(req, res, next, url = '') {
  * @param {Function} next - The next function in the middleware chain.
  * @returns {Void} - This function does not return a value directly.
  */
-async function notAuth(req, res, next) {
+async function not_auth(req, res, next) {
     if (!(req.session && req.session.user_id))
         return next()
 
@@ -35,5 +35,5 @@ async function notAuth(req, res, next) {
 
 module.exports = {
     auth: auth,
-    notAuth: notAuth
+    not_auth: not_auth
 }
