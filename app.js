@@ -25,7 +25,7 @@ const databaseURL = config.DATABASE_URL
 const port = config.PORT || 3030
 const SSL = config.SSL === 'true'
 const secret = config.SECRET
-const debug = config.DEBUG === "true"
+const debug = config.DEBUG === 'true'
 
 // Load app resources
 const methods = require('./methods')
