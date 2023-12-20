@@ -2,11 +2,11 @@
 const express = require('express')
 const session = require('express-session')
 
-const https = require('https');
-const http = require('http');
+const https = require('https')
+const http = require('http')
 
 const fs = require('fs')
-const PostgreSqlStore = require('connect-pg-simple')(session);
+const PostgreSqlStore = require('connect-pg-simple')(session)
 
 const nunjucks = require('nunjucks')
 const bodyParser = require('body-parser')
@@ -32,6 +32,7 @@ const methods = require('./methods')
 
 const accountRouter = require('./account')
 const docsRouter = require('./docs')
+const adminRouter = require('./admin')
 const mainRouter = require('./main')
 
 const apiRouter = require('./api')
@@ -69,7 +70,7 @@ app.use(session({
 app.use(cors({ origin: true }))
 
 // add static folder
-app.use('/static', express.static(__dirname + '/static'));
+app.use('/static', express.static(__dirname + '/static'))
 
 // add routes
 app.use('/api', reqAuth, apiRouter)
@@ -77,6 +78,7 @@ app.use('/auth', notAuth, authRouter)
 app.use('/logout', (req, res) => { req.session.destroy(); res.redirect('/') })
 app.use('/account', authHandler, accountRouter)
 app.use('/docs', docsRouter)
+app.use('/admin', adminRouter)
 app.use('/', mainRouter)
 
 // handle 404
@@ -98,17 +100,17 @@ app.use(function (req, res, next) {
 
 if (SSL) {
     const httpsServer = https.createServer({
-        key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
-    }, app);
+        key: fs.readFileSync(__dirname + '/.ssl/key.pem'),
+        cert: fs.readFileSync(__dirname + '/.ssl/cert.pem'),
+    }, app)
 
     httpsServer.listen(port, () => {
-        console.log(`GoToBank server running on port ${port} over https protocol`);
-    });
+        console.log(`GoToBank server running on port ${port} over https protocol`)
+    })
 }
 else {
-    const httpServer = http.createServer(app);
+    const httpServer = http.createServer(app)
     httpServer.listen(port, () => {
-        console.log(`GoToBank server running on port ${port} over http protocol`);
-    });
+        console.log(`GoToBank server running on port ${port} over http protocol`)
+    })
 }
