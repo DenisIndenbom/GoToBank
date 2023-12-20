@@ -2,7 +2,7 @@ const prisma = require('../lib/prisma')
 const moment = require('moment')
 const randtoken = require('rand-token')
 
-const config = require('dotenv').config({ path: __dirname + '/../.env' }).parsed
+const config = global.config // require('dotenv').config({ path: __dirname + '/../.env' }).parsed
 
 const attempts = Number(config.CODE_ATTEMPTS)
 const expiration = Number(config.CODE_EXPIRATION)

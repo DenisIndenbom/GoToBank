@@ -6,7 +6,7 @@ const router = express.Router() // Instantiate a new router
 const init_account = require('../methods/bank.js').init_account
 
 // Load config
-const config = require('dotenv').config({ path: __dirname + '/../.env' }).parsed
+const config = global.config // require('dotenv').config({ path: __dirname + '/../.env' }).parsed
 
 // Init OAuth client
 const GoToIDAuth = new ClientOAuth2({

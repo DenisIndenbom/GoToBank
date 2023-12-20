@@ -1,13 +1,31 @@
 // Import libs
 const express = require('express')
 const session = require('express-session')
+
+const https = require('https');
+const http = require('http');
+
+const fs = require('fs')
 const PostgreSqlStore = require('connect-pg-simple')(session);
+
 const nunjucks = require('nunjucks')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
 // Init express
 const app = express()
+
+// Load configuration from .env
+const config = require('dotenv').config({ path: __dirname + '/.env' }).parsed
+
+// save configuration in global
+global.config = config
+
+const databaseURL = config.DATABASE_URL
+const port = config.PORT || 3030
+const SSL = config.SSL === 'true'
+const secret = config.SECRET
+const debug = config.DEBUG === "true"
 
 // Load app resources
 const methods = require('./methods')
@@ -27,14 +45,6 @@ const notAuth = methods.notAuth
 function authHandler(req, res, next) {
     return auth(req, res, next, '/auth')
 }
-
-// Load configuration from .env
-const config = require('dotenv').config({ path: __dirname + '/.env' }).parsed
-
-const databaseURL = config.DATABASE_URL
-const port = config.PORT || 3030
-const secret = config.SECRET
-const debug = config.DEBUG === "true"
 
 // Init template engine
 nunjucks.configure('templates', {
@@ -78,12 +88,27 @@ app.use(function (req, res, next) {
     }
     // respond with json
     if (req.accepts('json')) {
-        return res.json({ state:'error', code: 'not_found', error: 'Not found' })
+        return res.json({ state: 'error', code: 'not_found', error: 'Not found' })
     }
     // default to plain-text. send()
     return res.type('txt').send('Not found')
 })
 
-app.listen(port)
+// Run app
 
-console.log("GoToBank Server listening on port:", port)
+if (SSL) {
+    const httpsServer = https.createServer({
+        key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+    }, app);
+
+    httpsServer.listen(port, () => {
+        console.log(`GoToBank server running on port ${port} over https protocol`);
+    });
+}
+else {
+    const httpServer = http.createServer(app);
+    httpServer.listen(port, () => {
+        console.log(`GoToBank server running on port ${port} over http protocol`);
+    });
+}
