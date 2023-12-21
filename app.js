@@ -95,20 +95,19 @@ app.use(function (req, res, next) {
 })
 
 // Run app
+module.exports = (is_main) => {
+    global.is_main = is_main
 
-if (SSL) {
-    const httpsServer = https.createServer({
-        key: fs.readFileSync(__dirname + '/.ssl/key.pem'),
-        cert: fs.readFileSync(__dirname + '/.ssl/cert.pem'),
-    }, app)
+    if (SSL) {
+        const httpsServer = https.createServer({
+            key: fs.readFileSync(__dirname + '/.ssl/key.pem'),
+            cert: fs.readFileSync(__dirname + '/.ssl/cert.pem'),
+        }, app)
 
-    httpsServer.listen(port, () => {
-        console.log(`GoToBank server running on port ${port} over https protocol`)
-    })
-}
-else {
-    const httpServer = http.createServer(app)
-    httpServer.listen(port, () => {
-        console.log(`GoToBank server running on port ${port} over http protocol`)
-    })
+        httpsServer.listen(port)
+    }
+    else {
+        const httpServer = http.createServer(app)
+        httpServer.listen(port)
+    }
 }

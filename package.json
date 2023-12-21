@@ -4,7 +4,9 @@
   "description": "GoToBank",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node cluster.js",
+    "dev": "node dev.js",
+    "cluster": "node cluster.js",
     "db:migrate": "npx prisma migrate dev",
     "db:deploy": "npx prisma migrate deploy"
   },
