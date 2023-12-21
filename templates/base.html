@@ -45,7 +45,9 @@
     </nav>
     <div class="container py-3">
       {% if error %}
-        <div class="alert alert-warning">{{ error }}</div>
+        <div class="row d-flex justify-content-center align-items-center mx-auto">
+          <div class="col col-xl-7 alert alert-warning">{{ error }}</div>
+        </div>
       {% endif %}
       {% block content %}
 
@@ -53,5 +55,6 @@
     </div>
     <script src="/static/theme-switcher.js"></script>
     <script src="/static/markdown_render.js"></script>
+    <script src="/static/validate_form.js"></script>
   </body>
 </html>

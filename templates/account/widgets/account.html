@@ -13,7 +13,17 @@
       </div>
     </div>
     <div class="float-end">
-      <a href="/account/telegram" class="btn btn-primary btn-sm">Уведомления</a>
+      <div class="dropdown">
+        <a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Действия</a>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="/account/telegram">Уведомления</a>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#transfer">Перевод</button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
   {% if ban %}
@@ -26,5 +36,41 @@
       <summary>Токен</summary>
       <code>{{ token }}</code>
     </details>
+  </div>
+  <div class="modal fade" id="transfer" tabindex="-1" aria-labelledby="transfer" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Перевод</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="post" action="account/transfer" class="needs-validation" novalidate>
+          <div class="modal-body">
+            <div class="mb-4">
+              <label>ID получателя</label>
+              <input class="form-control" type="number" name="to_id" required />
+              <div class="invalid-feedback">Пожалуйста, введите ID получателя!</div>
+              <div class="valid-feedback">Отлично!</div>
+            </div>
+            <div class="mb-4">
+              <label>Сумма</label>
+              <input class="form-control" type="number" name="amount" required />
+              <div class="invalid-feedback">Пожалуйста, введите сумму!</div>
+              <div class="valid-feedback">Отлично!</div>
+            </div>
+            <div class="mb-4">
+              <label>Описание</label>
+              <input class="form-control" type="text" name="description" required />
+              <div class="invalid-feedback">Пожалуйста, введите описание!</div>
+              <div class="valid-feedback">Отлично!</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            <button type="submit" class="btn btn-primary">Перевести</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
