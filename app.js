@@ -18,7 +18,7 @@ const app = express()
 // Load configuration from .env
 const config = require('dotenv').config({ path: __dirname + '/.env' }).parsed
 
-// save configuration in global
+// Save configuration in global
 global.config = config
 
 const databaseURL = config.DATABASE_URL
@@ -41,7 +41,7 @@ const authRouter = require('./auth')
 const auth = methods.is_auth.auth
 const not_auth = methods.is_auth.not_auth
 
-// some tools
+// Some tools
 function authHandler(req, res, next) {
     return auth(req, res, next, '/auth')
 }
@@ -61,7 +61,7 @@ app.use(bodyParser.json())
 app.use(session({
     secret: secret,
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { maxAge: 3 * 24 * 60 * 60 * 1000 }, // session is stored for 3 days
     store: new PostgreSqlStore({ conString: databaseURL })
 }))
@@ -79,7 +79,7 @@ app.use('/account', authHandler, accountRouter)
 app.use('/docs', docsRouter)
 app.use('/', mainRouter)
 
-// handle 404
+// Handle 404
 app.use(function (req, res, next) {
     res.status(404)
     // respond with html page

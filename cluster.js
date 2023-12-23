@@ -1,7 +1,9 @@
 const cluster = require('cluster')
-const cCPUs = require('os').cpus().length
 
 if (cluster.isMaster) {
+    const workers = require('dotenv').config({ path: __dirname + '/.env' }).parsed.WORKERS
+
+    let cCPUs = workers > 0 ? workers : require('os').cpus().length
     let main_worker_id = 1
     let last_worker_id = 0
 
