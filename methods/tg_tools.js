@@ -44,11 +44,27 @@ async function code_notification(telegram, transaction, code) {
 
     const message = `Запрос ${transaction.amount} gt - ${transaction.description}\n\nКод подтверждения: ${code.code}`
 
-    try {await tgbot.sendMessage(telegram.telegram_id, message)}
+    try { await tgbot.sendMessage(telegram.telegram_id, message) }
+    catch (error) { }
+}
+
+/**
+* Send a system notification.
+* 
+* @param {object} telegram - The recipient of the notification in the telegram
+* @param {string} text - The text of notification
+*/
+async function notification(telegram, text) {
+    if (!telegram) return
+
+    const message = `Уведомление от GoToBank:\n\n${text}`
+
+    try { await tgbot.sendMessage(telegram.telegram_id, message) }
     catch (error) { }
 }
 
 module.exports = {
     transaction_notification: transaction_notification,
-    code_notification: code_notification
+    code_notification: code_notification,
+    notification: notification
 }

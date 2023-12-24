@@ -156,6 +156,24 @@ async function get_telegram(account_id, include_account = false) {
 }
 
 /**
+* Get all the info about telegrams. 
+* 
+* @param {Number} account_id - The id of the account
+* @param {boolean} include_account - Include account in sql request
+* 
+* @returns {object} The info about telegrams
+*/
+async function get_telegrams(include_account = false) {
+    const telegrams = await prisma.telegram.findMany({
+        include: {
+            account: include_account
+        }
+    })
+
+    return telegrams
+}
+
+/**
  * Get the transaction info.
  * 
  * @param {Number} transaction_id - The id of transaction
@@ -575,6 +593,7 @@ module.exports = {
     get_accounts: get_accounts,
     get_account: get_account,
     get_telegram: get_telegram,
+    get_telegrams: get_telegrams,
     get_transaction: get_transaction,
     get_account_transactions: get_account_transactions,
     get_all_transactions: get_all_transactions,

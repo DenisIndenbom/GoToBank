@@ -86,6 +86,19 @@ router.post('/commission', async (req, res) => {
     return res.redirect('/admin')
 })
 
+router.post('/mailing', async (req, res) => {
+    const message = req.body.message
+
+    if (!message)
+        return res.redirect('/admin')
+
+    for (const telegram of (await bank.get_telegrams())) {
+        tg_tools.notification(telegram, message)
+    }
+
+    return res.redirect('/admin')
+})
+
 router.post('/ban', async (req, res) => {
     if (!await admin.access(req.session.user_id, 2))
         return res.redirect('/admin?error=Не достаточно прав!')

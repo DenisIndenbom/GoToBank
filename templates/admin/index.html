@@ -13,6 +13,10 @@
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#emission">Напечатать деньги</button>
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#commission">Оштрафовать</button>
           </div>
+          <h5 class="card-title text-center mb-2">Телеграм</h5>
+          <div class="d-grid gap-2 my-3 mx-4">
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#mailing">Рассылка</button>
+          </div>
           {% endif %}
           {% if admin_level >= 2%}
           <h5 class="card-title text-center mb-2">Операции с аккаунтами</h5>
@@ -104,6 +108,31 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
               <button type="submit" class="btn btn-primary">Оштрафовать</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="mailing" tabindex="-1" aria-labelledby="mailing" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Рассылка</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form method="post" action="admin/mailing" class="needs-validation" novalidate>
+            <div class="modal-body">
+              <div class="mb-4">
+                <label>Сообщение</label>
+                <textarea class="form-control" type="text" name="message" required> </textarea>
+                <div class="invalid-feedback">Пожалуйста, введите сообщение!</div>
+                <div class="valid-feedback">Отлично!</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+              <button type="submit" class="btn btn-primary">Разослать</button>
             </div>
           </form>
         </div>
