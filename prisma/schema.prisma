@@ -1,3 +1,4 @@
+// Prisma config
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,6 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Transaction enums
 enum Status {
   done
   pending
@@ -21,6 +23,7 @@ enum Type {
   commission
 }
 
+// Account models
 model Account {
   id            Int      @id @default(autoincrement())
   user_id       Int
@@ -41,6 +44,7 @@ model Telegram {
   account Account? @relation(fields: [account_id], references: [id])
 }
 
+// Transaction models
 model Transaction {
   id          Int      @id @default(autoincrement())
   from_id     Int?
@@ -65,8 +69,15 @@ model Code {
   transaction Transaction @relation(fields: [transaction_id], references: [id])
 }
 
+// App`s models
 model session {
   sid    String   @unique
   sess   Json
   expire DateTime
+}
+
+model Admin {
+  user_id  Int      @id
+  level    Int
+  added_at DateTime @default(now()) @db.Timestamp
 }

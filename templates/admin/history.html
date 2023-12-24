@@ -1,0 +1,79 @@
+{% extends base %}
+{% block content %}
+  <div class="row d-flex justify-content-center align-items-center mx-auto">
+    <div class="col col-xl-10">
+      <div class="card my-2 mb-2">
+        <div class="card-header">
+          <h5>Транзакции</h5>
+        </div>
+        <div class="card-body overflow-auto m-1">
+          {% if transactions.length > 0 %}
+            <table class="table table-hover table-sm font-monospace">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Откуда</th>
+                  <th scope="col">Куда</th>
+                  <th scope="col">Сумма</th>
+                  <th scope="col">Дата</th>
+                  <th scope="col">Тип</th>
+                  <th scope="col">Описание</th>
+                  <th scope="col">Статус</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in transactions %}
+                  <tr>
+                    <th scope="row">{{ row.id }}</th>
+                    <th scope="row">{{ row.from_id }}</th>
+                    <th scope="row">{{ row.to_id }}</th>
+                    <td>
+                      <strong class="text-warning">{{ row.amount }}</strong>
+                    </td>
+                    <td>{{ row.created_at.toLocaleString('ru', { timeZone: 'Europe/Moscow' }) }}</td>
+                    <td>
+                      {% if row.type == 'emission' %}
+                        <span class="badge text-bg-warning">{{ row.type }}</span>
+                      {% elif row.type == 'commission' %}
+                        <span class="badge text-bg-danger">{{ row.type }}</span>
+                      {% else %}
+                        <span class="badge text-bg-primary">{{ row.type }}</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ row.description }}</td>
+                    <td>
+                      {% if row.status == 'done' %}
+                        <span class="badge text-bg-success">{{ row.status }}</span>
+                      {% elif row.status == 'pending' %}
+                        <span class="badge text-bg-secondary">{{ row.status }}</span>
+                      {% elif row.status == 'blocked' or row.status == 'cancelled' %}
+                        <span class="badge text-bg-danger">{{ row.status }}</span>
+                      {% else %}
+                        {{ row.status }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <nav>
+              <ul class="pagination justify-content-center my-2 mx-auto">
+                <li class="page-item {% if prev_page <= 0 %}{% endif %}">
+                  <a class="page-link" href="?page={{ prev_page }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                </li>
+                <li class="page-item">
+                  <div class="page-link">{{ current_page }}</div>
+                </li>
+                <li class="page-item {% if next_page <= 0 %}{% endif %}">
+                  <a class="page-link" href="?page={{ next_page }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                </li>
+              </ul>
+            </nav>
+          {% else %}
+            <div class="text-secondary text-center">Транзакций пока нет.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

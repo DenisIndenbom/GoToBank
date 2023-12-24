@@ -30,16 +30,19 @@ const debug = config.DEBUG === 'true'
 // Load app resources
 const methods = require('./methods')
 
-const accountRouter = require('./account')
-const docsRouter = require('./docs')
-const mainRouter = require('./main')
+const account_router = require('./account')
+const docs_router = require('./docs')
+const main_router = require('./main')
 
-const apiRouter = require('./api')
+const api_router = require('./api')
 const api_auth = methods.api.req_auth
 
-const authRouter = require('./auth')
+const auth_router = require('./auth')
 const auth = methods.is_auth.auth
 const not_auth = methods.is_auth.not_auth
+
+const admin_panel_router = require('./admin')
+const is_admin = methods.admin.is_admin
 
 // Some tools
 function authHandler(req, res, next) {
@@ -68,23 +71,29 @@ app.use(session({
 
 app.use(cors({ origin: true }))
 
-// add static folder
+// Add static folder
 app.use('/static', express.static(__dirname + '/static'))
 
-// add routes
-app.use('/api', api_auth, apiRouter)
-app.use('/auth', not_auth, authRouter)
+// Add routes
+
+// Add admin panel route
+app.use('/admin', authHandler, is_admin, admin_panel_router)
+// Add API route
+app.use('/api', api_auth, api_router)
+// Add authorisation routes
+app.use('/auth', not_auth, auth_router)
 app.use('/logout', (req, res) => { req.session.destroy(); res.redirect('/') })
-app.use('/account', authHandler, accountRouter)
-app.use('/docs', docsRouter)
-app.use('/', mainRouter)
+// Add main app routes
+app.use('/account', authHandler, account_router)
+app.use('/docs', docs_router)
+app.use('/', main_router)
 
 // Handle 404
 app.use(function (req, res, next) {
     res.status(404)
     // respond with html page
     if (req.accepts('html')) {
-        return res.render('404.html', { base: 'base.html' })
+        return res.render('404.html', { base: 'base.html', title: '404' })
     }
     // respond with json
     if (req.accepts('json')) {

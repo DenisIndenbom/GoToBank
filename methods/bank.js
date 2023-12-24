@@ -2,7 +2,7 @@ const prisma = require('../lib/prisma')
 const moment = require('moment')
 const randtoken = require('rand-token')
 
-const config = global.config // require('dotenv').config({ path: __dirname + '/../.env' }).parsed
+const config = global.config
 
 const attempts = Number(config.CODE_ATTEMPTS)
 const expiration = Number(config.CODE_EXPIRATION)
@@ -58,6 +58,26 @@ async function init_account(user_id) {
         data: {
             user_id: user_id,
             trading_token: randtoken.generate(32),
+        }
+    })
+
+    return !!account
+}
+
+/**
+ * Set the account ban state.
+ * 
+ * @param {Number} account_id - The id of account
+ * @param {*} ban - Ban state
+ * @returns {boolean} true if successful else false
+ */
+async function set_account_ban(account_id, ban) {
+    const account = await prisma.account.update({
+        where: {
+            id: account_id
+        },
+        data: {
+            ban: ban
         }
     })
 
@@ -214,6 +234,28 @@ async function get_transactions(account_id, offset = 0, limit = 25) {
                 { to_id: account_id }
             ]
         },
+        orderBy: [
+            { id: 'desc' }
+        ]
+    })
+
+    return transactions
+}
+
+/**
+ * Get all bank transactions.
+ * 
+ * @param {Number} [offset=0] - offset in db
+ * @param {Number} [limit=50] - max size of the returned array
+ * 
+ * @returns {Array} Array of transactions
+ * 
+ * @throws An error if values are not set
+ */
+async function get_all_transactions(offset = 0, limit = 25) {
+    const transactions = await prisma.transaction.findMany({
+        skip: offset >= 0 ? offset : 0,
+        take: limit > 0 ? limit : 1,
         orderBy: [
             { id: 'desc' }
         ]
@@ -454,7 +496,7 @@ async function verify_payment(confirming_id, transaction_id, code) {
 /**
  * Create emission transaction to account A.
  * 
- * @param {Number} to_id - The id of emission to account
+ * @param {Number} to_id - The id of account
  * @param {Number} amount - The amount of money emission
  * @param {string} description - Description of the transaction
  * 
@@ -487,17 +529,60 @@ async function emission(to_id, amount, description) {
     return transaction
 }
 
+/**
+ * Create commission transaction to account A.
+ * 
+ * @param {Number} from_id - The id of account
+ * @param {Number} amount - The amount of money commission
+ * @param {string} description - Description of the transaction
+ * 
+ * @returns {Object} Сompleted transaction
+ * 
+ * @throws {Error} Throw error if account A don't exist. Error code: account_not_exist
+ * @throws {Error} Throw error if your account is blocked. Error code: account_blocked
+ * @throws {Error} Throw error if there are not enough funds in the account. Error code: insufficient_funds
+ */
+async function commission(from_id, amount, description) {
+    const from = await get_account(from_id)
+
+    if (!from)
+        throw error('account_not_exist', `Account doesn't exist`)
+
+    if (from.ban)
+        throw error('account_blocked', 'Account is blocked!')
+
+    if (await balance(from_id) < amount)
+        throw error('insufficient_funds', `Insufficient funds!`)
+
+    // create new emission transaction
+    const transaction = await prisma.transaction.create({
+        data: {
+            from_id: from_id,
+            to_id: null,
+            amount: amount,
+            type: 'commission',
+            description: description,
+            status: 'done'
+        }
+    })
+
+    return transaction
+}
+
 module.exports = {
     init_account: init_account,
+    set_account_ban: set_account_ban,
     get_accounts: get_accounts,
     get_account: get_account,
     get_telegram: get_telegram,
     get_transaction: get_transaction,
     get_transactions: get_transactions,
+    get_all_transactions: get_all_transactions,
     get_codes: get_codes,
     balance: balance,
     transfer: transfer,
     payment: payment,
     verify_payment: verify_payment,
-    emission: emission
+    emission: emission,
+    commission: commission
 }

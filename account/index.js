@@ -14,7 +14,7 @@ router.get('/', async function (req, res) {
 
     const error = req.query.error
 
-    const page = req.query.page ? Number(req.query.page) : 1
+    const page = (req.query.page && Number(req.query.page) > 0) ? Number(req.query.page) : 1
     const transactions = await bank.get_transactions(account.id, (page - 1) * limit, limit)
 
     // Redirect to page if there are no transactions to display on the page.
