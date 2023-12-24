@@ -185,35 +185,6 @@ async function get_transaction(transaction_id, include = true) {
 }
 
 /**
- * Get active verify codes of payment transactions by account id.
- * 
- * @param {Number} account_id - The id of account
- * 
- * @returns {Array} Array of codes
- * 
- * @throws An error if values are not set
- */
-async function get_codes(account_id) {
-    const codes = await prisma.transaction.findMany({
-        where: {
-            from_id: account_id,
-            type: 'payment',
-            status: 'pending',
-            code: {
-                expires_at: {
-                    gte: new Date()
-                }
-            }
-        },
-        select: {
-            code: true
-        }
-    })
-
-    return codes
-}
-
-/**
  * Get the account's transactions.
  * 
  * @param {Number} account_id - The id of account
@@ -224,7 +195,7 @@ async function get_codes(account_id) {
  * 
  * @throws An error if values are not set
  */
-async function get_transactions(account_id, offset = 0, limit = 25) {
+async function get_account_transactions(account_id, offset = 0, limit = 25) {
     const transactions = await prisma.transaction.findMany({
         skip: offset >= 0 ? offset : 0,
         take: limit > 0 ? limit : 1,
@@ -262,6 +233,35 @@ async function get_all_transactions(offset = 0, limit = 25) {
     })
 
     return transactions
+}
+
+/**
+ * Get active verify codes of payment transactions by account id.
+ * 
+ * @param {Number} account_id - The id of account
+ * 
+ * @returns {Array} Array of codes
+ * 
+ * @throws An error if values are not set
+ */
+async function get_codes(account_id) {
+    const codes = await prisma.transaction.findMany({
+        where: {
+            from_id: account_id,
+            type: 'payment',
+            status: 'pending',
+            code: {
+                expires_at: {
+                    gte: new Date()
+                }
+            }
+        },
+        select: {
+            code: true
+        }
+    })
+
+    return codes
 }
 
 /**
@@ -418,7 +418,7 @@ async function verify_payment(confirming_id, transaction_id, code) {
         throw error('transaction_not_exist', `Transaction doesn't exist.`)
 
     if (transaction.to_id != confirming_id)
-        throw error('', 'The transaction does not belong to you!')
+        throw error('transaction_not_exist', 'The payment transaction does not belong to you!')
 
     if (transaction.type != 'payment')
         throw error('invalid_transaction_id', 'Invalid transaction ID is specified.')
@@ -576,7 +576,7 @@ module.exports = {
     get_account: get_account,
     get_telegram: get_telegram,
     get_transaction: get_transaction,
-    get_transactions: get_transactions,
+    get_account_transactions: get_account_transactions,
     get_all_transactions: get_all_transactions,
     get_codes: get_codes,
     balance: balance,

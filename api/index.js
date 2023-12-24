@@ -98,7 +98,7 @@ router.post('/payment', async function (req, res) {
         const payment = await bank.payment(from_id, account.id, amount, description)
 
         // send notification
-        const telegram = await bank.get_telegram(payment.to_id)
+        const telegram = await bank.get_telegram(from_id)
         tg_tools.code_notification(telegram, payment.transaction, payment.code)
 
         return res.json({ state: 'success', transaction: payment.transaction })
