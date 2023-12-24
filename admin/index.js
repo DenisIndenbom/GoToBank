@@ -40,50 +40,72 @@ router.post('/emission', async (req, res) => {
     if (!await admin.access(req.session.user_id, 1))
         return res.redirect('/admin?error=Не достаточно прав!')
 
-    const to_id = Number(req.body.to_id)
+    const account_ids = req.body.account_ids
     const amount = Number(req.body.amount)
     const description = req.body.description
 
-    if (!to_id || !amount || !description || to_id < 0 || amount <= 0)
+    if (!account_ids || !amount || !description || amount <= 0)
         return res.redirect('/admin')
 
-    try {
-        const transaction = await bank.emission(to_id, amount, description)
+    let errors = ''
 
-        const telegram = await bank.get_telegram(transaction.to_id)
-        tg_tools.transaction_notification(telegram, transaction)
-    }
-    catch (e) {
-        if (err_codes.includes(e.code))
-            return res.redirect(`/admin?error=${e.message}`)
+    for (const account_id of account_ids.split(' ')) {
+        const to_id = Number(account_id)
+
+        if (!to_id) {
+            errors += `Invalid ID: ${account_id}; `
+            continue
+        }
+
+        try {
+            const transaction = await bank.emission(to_id, amount, description)
+
+            const telegram = await bank.get_telegram(transaction.to_id)
+            tg_tools.transaction_notification(telegram, transaction)
+        }
+        catch (e) {
+            if (err_codes.includes(e.code))
+                errors += `(${account_id}): ${e.message}; `
+        }
     }
 
-    return res.redirect('/admin')
+    return res.redirect(`/admin${errors ? `?error=${errors}` : ''}`)
 })
 
 router.post('/commission', async (req, res) => {
     if (!await admin.access(req.session.user_id, 1))
         return res.redirect('/admin?error=Не достаточно прав!')
 
-    const from_id = Number(req.body.from_id)
+    const account_ids = req.body.account_ids
     const amount = Number(req.body.amount)
     const description = req.body.description
 
-    if (!from_id || !amount || !description || from_id < 0 || amount <= 0)
+    if (!account_ids || !amount || !description || amount <= 0)
         return res.redirect('/admin')
 
-    try {
-        const transaction = await bank.commission(from_id, amount, description)
+    let errors = ''
 
-        const telegram = await bank.get_telegram(transaction.from_id)
-        tg_tools.transaction_notification(telegram, transaction)
-    }
-    catch (e) {
-        if (err_codes.includes(e.code))
-            return res.redirect(`/admin?error=${e.message}`)
+    for (const account_id of account_ids.split(' ')) {
+        const from_id = Number(account_id)
+
+        if (!from_id) {
+            errors += `Invalid ID: ${account_id}; `
+            continue
+        }
+
+        try {
+            const transaction = await bank.commission(from_id, amount, description)
+
+            const telegram = await bank.get_telegram(transaction.from_id)
+            tg_tools.transaction_notification(telegram, transaction)
+        }
+        catch (e) {
+            if (err_codes.includes(e.code))
+                errors += `(${account_id}): ${e.message}; `
+        }
     }
 
-    return res.redirect('/admin')
+    return res.redirect(`/admin${errors ? `?error=${errors}` : ''}`)
 })
 
 router.post('/mailing', async (req, res) => {

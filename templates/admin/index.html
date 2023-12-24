@@ -10,8 +10,8 @@
           {% if admin_level >= 1%}
           <h5 class="card-title text-center mb-2">Финансы</h5>
           <div class="d-grid gap-2 my-3 mx-4">
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#emission">Напечатать деньги</button>
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#commission">Оштрафовать</button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#emission">Начисление</button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#commission">Штраф</button>
           </div>
           <h5 class="card-title text-center mb-2">Телеграм</h5>
           <div class="d-grid gap-2 my-3 mx-4">
@@ -44,15 +44,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Напечатать деньги</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Начисление</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form method="post" action="admin/emission" class="needs-validation" novalidate>
             <div class="modal-body">
               <div class="mb-4">
-                <label>ID аккаунта</label>
-                <input class="form-control" type="number" name="to_id" required />
-                <div class="invalid-feedback">Пожалуйста, введите ID получателя!</div>
+                <label>ID аккаунтов</label>
+                <input class="form-control" type="text" name="account_ids" required />
+                <div class="invalid-feedback">Пожалуйста, введите ID получателей!</div>
                 <div class="valid-feedback">Отлично!</div>
               </div>
               <div class="mb-4">
@@ -70,7 +70,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-              <button type="submit" class="btn btn-primary">Напечатать</button>
+              <button type="submit" class="btn btn-primary">Начислить</button>
             </div>
           </form>
         </div>
@@ -81,15 +81,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Оштрафовать</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Штраф</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form method="post" action="admin/commission" class="needs-validation" novalidate>
             <div class="modal-body">
               <div class="mb-4">
-                <label>ID аккаунта</label>
-                <input class="form-control" type="number" name="from_id" required />
-                <div class="invalid-feedback">Пожалуйста, введите ID штрафуемого!</div>
+                <label>ID аккаунтов</label>
+                <input class="form-control" type="text" name="account_ids" required />
+                <div class="invalid-feedback">Пожалуйста, введите ID штрафуемых!</div>
                 <div class="valid-feedback">Отлично!</div>
               </div>
               <div class="mb-4">
