@@ -13,7 +13,6 @@ enum Status {
   done
   pending
   blocked
-  cancelled
 }
 
 enum Type {
@@ -69,15 +68,9 @@ model Code {
   transaction Transaction @relation(fields: [transaction_id], references: [id])
 }
 
-// App`s models
+// sessions
 model session {
   sid    String   @unique
   sess   Json
   expire DateTime
-}
-
-model Admin {
-  user_id  Int      @id
-  level    Int
-  added_at DateTime @default(now()) @db.Timestamp
 }

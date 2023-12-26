@@ -70,6 +70,8 @@ async function init_account(user_id) {
  * @param {Number} account_id - The id of account
  * @param {*} ban - Ban state
  * @returns {boolean} true if successful else false
+ * 
+ * @throws An error if values are not set
  */
 async function set_account_ban(account_id, ban) {
     const account = await prisma.account.update({
@@ -141,6 +143,8 @@ async function get_account(account_id, include_transactions = false) {
 * @param {boolean} include_account - Include account in sql request
 * 
 * @returns {object} The telegram info or null if not
+*
+* @throws An error if values are not set
 */
 async function get_telegram(account_id, include_account = false) {
     const telegram = await prisma.telegram.findFirst({
@@ -223,28 +227,6 @@ async function get_account_transactions(account_id, offset = 0, limit = 25) {
                 { to_id: account_id }
             ]
         },
-        orderBy: [
-            { id: 'desc' }
-        ]
-    })
-
-    return transactions
-}
-
-/**
- * Get all bank transactions.
- * 
- * @param {Number} [offset=0] - offset in db
- * @param {Number} [limit=50] - max size of the returned array
- * 
- * @returns {Array} Array of transactions
- * 
- * @throws An error if values are not set
- */
-async function get_all_transactions(offset = 0, limit = 25) {
-    const transactions = await prisma.transaction.findMany({
-        skip: offset >= 0 ? offset : 0,
-        take: limit > 0 ? limit : 1,
         orderBy: [
             { id: 'desc' }
         ]
@@ -441,9 +423,6 @@ async function verify_payment(confirming_id, transaction_id, code) {
     if (transaction.type != 'payment')
         throw error('invalid_transaction_id', 'Invalid transaction ID is specified.')
 
-    if (transaction.status === 'cancelled')
-        throw error('transaction_cancelled', `The transaction has been cancelled.`)
-
     if (transaction.status === 'blocked')
         throw error('transaction_blocked', `The transaction has been blocked.`)
 
@@ -470,20 +449,7 @@ async function verify_payment(confirming_id, transaction_id, code) {
 
         return 'done'
     }
-    else if (!is_active || !balance_correct) {
-        // cancell transaction
-        await prisma.transaction.update({
-            where: {
-                id: transaction_id
-            },
-            data: {
-                status: 'cancelled'
-            }
-        })
-
-        return 'cancelled'
-    }
-    else if (transaction.code.attempts - 1 < 0) {
+    else if (transaction.code.attempts - 1 < 0 || !is_active || !balance_correct) {
         // block transaction
         await prisma.transaction.update({
             where: {
@@ -596,7 +562,6 @@ module.exports = {
     get_telegrams: get_telegrams,
     get_transaction: get_transaction,
     get_account_transactions: get_account_transactions,
-    get_all_transactions: get_all_transactions,
     get_codes: get_codes,
     balance: balance,
     transfer: transfer,

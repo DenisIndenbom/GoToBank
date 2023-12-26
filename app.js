@@ -41,9 +41,6 @@ const auth_router = require('./auth')
 const auth = methods.is_auth.auth
 const not_auth = methods.is_auth.not_auth
 
-const admin_panel_router = require('./admin')
-const is_admin = methods.admin.is_admin
-
 // Some tools
 function authHandler(req, res, next) {
     return auth(req, res, next, '/auth')
@@ -76,8 +73,6 @@ app.use('/static', express.static(__dirname + '/static'))
 
 // Add routes
 
-// Add admin panel route
-app.use('/admin', authHandler, is_admin, admin_panel_router)
 // Add API route
 app.use('/api', api_auth, api_router)
 // Add authorisation routes
