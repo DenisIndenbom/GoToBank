@@ -70,7 +70,7 @@ GET /api/balance
 ```json
 {
     "state": "success",
-    "balance": 0 // Сумма на счету, валюта готубли
+    "balance": 0 // Сумма на счету
 }
 ```
 
