@@ -68,7 +68,8 @@ async function init_account(user_id) {
  * Set the account ban state.
  * 
  * @param {Number} account_id - The id of account
- * @param {*} ban - Ban state
+ * @param {boolean} ban - Ban state
+ * 
  * @returns {boolean} true if successful else false
  * 
  * @throws An error if values are not set
@@ -137,6 +138,28 @@ async function get_account(account_id, include_transactions = false) {
 }
 
 /**
+* Get the account by telegram id. 
+* 
+* @param {Number} telegram_id - The id of the telegram
+*
+* @returns {object} The account info or null if not
+*
+* @throws An error if values are not set
+*/
+async function get_account_by_tg(telegram_id) {
+    const telegram = await prisma.telegram.findFirst({
+        where: {
+            telegram_id: telegram_id
+        },
+        include: {
+            account: true
+        }
+    })
+
+    return !!telegram ? telegram.account : null
+}
+
+/**
 * Get telegram info by account id. 
 * 
 * @param {Number} account_id - The id of the account
@@ -157,24 +180,6 @@ async function get_telegram(account_id, include_account = false) {
     })
 
     return telegram
-}
-
-/**
-* Get all the info about telegrams. 
-* 
-* @param {Number} account_id - The id of the account
-* @param {boolean} include_account - Include account in sql request
-* 
-* @returns {object} The info about telegrams
-*/
-async function get_telegrams(include_account = false) {
-    const telegrams = await prisma.telegram.findMany({
-        include: {
-            account: include_account
-        }
-    })
-
-    return telegrams
 }
 
 /**
@@ -558,8 +563,8 @@ module.exports = {
     set_account_ban: set_account_ban,
     get_accounts: get_accounts,
     get_account: get_account,
+    get_account_by_tg: get_account_by_tg,
     get_telegram: get_telegram,
-    get_telegrams: get_telegrams,
     get_transaction: get_transaction,
     get_account_transactions: get_account_transactions,
     get_codes: get_codes,
