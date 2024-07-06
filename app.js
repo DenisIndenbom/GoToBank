@@ -59,6 +59,7 @@ app.use(bodyParser.json())
 
 // Setting up sessions
 app.use(session({
+    name: 'gotobank.sid',
     secret: secret,
     resave: true,
     saveUninitialized: false,
