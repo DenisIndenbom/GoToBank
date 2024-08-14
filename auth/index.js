@@ -15,7 +15,7 @@ const GoToIDAuth = new ClientOAuth2({
     accessTokenUri: `${config.OAUTH_HOST}/oauth/token`,
     authorizationUri: `${config.OAUTH_HOST}/oauth`,
     redirectUri: `${config.HOST}/auth/callback`,
-    scopes: []
+    scopes: ['user', 'telegram']
 })
 
 router.get('/', function (req, res) {
