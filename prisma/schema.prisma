@@ -36,9 +36,10 @@ model Account {
 }
 
 model Telegram {
-  account_id  Int     @unique
-  telegram_id Int     @unique
-  enabled     Boolean @default(true)
+  account_id        Int     @unique
+  telegram_id       Int?    @unique
+  telegram_username String? @unique
+  enabled           Boolean @default(true)
 
   account Account? @relation(fields: [account_id], references: [id])
 }

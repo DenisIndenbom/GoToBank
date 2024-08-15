@@ -61,7 +61,15 @@ async function init_account(user_id) {
         }
     })
 
-    return !!account
+    if (!account) return false
+
+    const telegram = await prisma.telegram.create({
+        data: {
+            account_id: account.id
+        }
+    })
+
+    return (!!account) && (!!telegram)
 }
 
 /**
@@ -138,25 +146,32 @@ async function get_account(account_id, include_transactions = false) {
 }
 
 /**
-* Get the account by telegram id. 
+* Get the account by telegram username. 
 * 
-* @param {Number} telegram_id - The id of the telegram
+* @param {string} telegram_username - The id of the telegram
+* @param {boolean} include_telegram - Include telegram in account info
 *
 * @returns {object} The account info or null if not
 *
 * @throws An error if values are not set
 */
-async function get_account_by_tg(telegram_id) {
+async function get_account_by_tg(telegram_username, include_telegram = fasle) {
     const telegram = await prisma.telegram.findFirst({
         where: {
-            telegram_id: telegram_id
+            telegram_username: telegram_username
         },
         include: {
             account: true
         }
     })
 
-    return !!telegram ? telegram.account : null
+    if (!telegram) return null
+
+    if (include_telegram) {
+        telegram.account.telegram = { telegram_id: telegram.telegram_id, telegram_username: telegram.telegram_username }
+    }
+
+    return telegram.account
 }
 
 /**
@@ -176,6 +191,52 @@ async function get_telegram(account_id, include_account = false) {
         },
         include: {
             account: include_account
+        }
+    })
+
+    return telegram
+}
+
+/**
+* Set telegram username by account id. 
+* 
+* @param {Number} account_id - The id of the account
+* @param {string} id - The id of telegram account 
+* 
+* @returns {object} The telegram info or null if not
+*
+* @throws An error if values are not set
+*/
+async function set_telegram_id(account_id, id) {
+    const telegram = await prisma.telegram.update({
+        where: {
+            account_id: account_id
+        },
+        data: {
+            telegram_id: id
+        }
+    })
+
+    return telegram
+}
+
+/**
+* Set telegram username by account id. 
+* 
+* @param {Number} account_id - The id of the account
+* @param {string} username - The username of telegram account 
+* 
+* @returns {object} The telegram info or null if not
+*
+* @throws An error if values are not set
+*/
+async function set_telegram_username(account_id, username) {
+    const telegram = await prisma.telegram.update({
+        where: {
+            account_id: account_id
+        },
+        data: {
+            telegram_username: username
         }
     })
 
@@ -565,6 +626,8 @@ module.exports = {
     get_account: get_account,
     get_account_by_tg: get_account_by_tg,
     get_telegram: get_telegram,
+    set_telegram_id: set_telegram_id,
+    set_telegram_username: set_telegram_username,
     get_transaction: get_transaction,
     get_account_transactions: get_account_transactions,
     get_codes: get_codes,

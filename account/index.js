@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router() // Instantiate a new router
 
-const prisma = require('../lib/prisma.js')
 const tg_tools = require('../methods/tg_tools.js')
 const bank = require('../methods/bank.js')
 
@@ -45,44 +44,29 @@ router.get('/telegram', async (req, res) => {
     return res.render('account/telegram.html', {
         base: 'base.html',
         title: 'Привязка Телеграм',
-        telegram_id: account.telegram ? account.telegram.telegram_id : null
+        telegram_username: account.telegram ? account.telegram.telegram_username : null
     })
 })
 
 router.post('/telegram', async (req, res) => {
-    const telegram_id = req.body.telegram_id
+    const telegram_username = req.body.telegram_username
 
-    if (!telegram_id)
+    if (!telegram_username)
         return res.redirect('/account/telegram')
 
-    const account = (await bank.get_accounts(req.session.user_id))[0]
+    const account_id = (await bank.get_accounts(req.session.user_id))[0].id
 
-    if (account.telegram) {
-        await prisma.telegram.update({
-            where: {
-                account_id: account.id
-            },
-            data: {
-                telegram_id: Number(telegram_id)
-            }
-        })
-    }
-    else {
-        await prisma.telegram.create({
-            data: {
-                account_id: account.id,
-                telegram_id: Number(telegram_id)
-            }
-        })
-    }
+    await bank.set_telegram_id(account_id, null)
+    await bank.set_telegram_username(account_id, telegram_username)
 
     return res.redirect('/account/telegram')
 })
 
 router.post('/telegram/delete', async (req, res) => {
-    const account = (await bank.get_accounts(req.session.user_id))[0]
+    const account_id = (await bank.get_accounts(req.session.user_id))[0].id
 
-    await prisma.telegram.delete({ where: { account_id: account.id } })
+    await bank.set_telegram_id(account_id, null)
+    await bank.set_telegram_username(account_id, '')
 
     return res.redirect('/account/telegram')
 })
