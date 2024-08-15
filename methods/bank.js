@@ -41,7 +41,7 @@ function randint(min, max) {
  * 
  * @param {Number} user_id - user id
  * 
- * @returns {boolean} Success or not
+ * @returns {object} - account info if success or account exists else null
  * 
  * @throws An error if values are not set
  */
@@ -52,7 +52,7 @@ async function init_account(user_id) {
         }
     })
 
-    if (accounts.length > 0) return false
+    if (accounts.length > 0) return accounts[0]
 
     const account = await prisma.account.create({
         data: {
@@ -61,15 +61,15 @@ async function init_account(user_id) {
         }
     })
 
-    if (!account) return false
+    if (!account) return null
 
-    const telegram = await prisma.telegram.create({
+    await prisma.telegram.create({
         data: {
-            account_id: account.id
+            account_id: account.id,
         }
     })
 
-    return (!!account) && (!!telegram)
+    return account
 }
 
 /**
@@ -203,21 +203,26 @@ async function get_telegram(account_id, include_account = false) {
 * @param {Number} account_id - The id of the account
 * @param {string} id - The id of telegram account 
 * 
-* @returns {object} The telegram info or null if not
+* @returns {boolean} Succes or not
 *
 * @throws An error if values are not set
 */
 async function set_telegram_id(account_id, id) {
-    const telegram = await prisma.telegram.update({
-        where: {
-            account_id: account_id
-        },
-        data: {
-            telegram_id: id
-        }
-    })
+    try {
+        await prisma.telegram.update({
+            where: {
+                account_id: account_id
+            },
+            data: {
+                telegram_id: id
+            }
+        })
+    }
+    catch (e) {
+        return false
+    }
 
-    return telegram
+    return true
 }
 
 /**
@@ -226,21 +231,26 @@ async function set_telegram_id(account_id, id) {
 * @param {Number} account_id - The id of the account
 * @param {string} username - The username of telegram account 
 * 
-* @returns {object} The telegram info or null if not
+* @returns {boolean} Succes or not
 *
 * @throws An error if values are not set
 */
 async function set_telegram_username(account_id, username) {
-    const telegram = await prisma.telegram.update({
-        where: {
-            account_id: account_id
-        },
-        data: {
-            telegram_username: username
-        }
-    })
+    try {
+        await prisma.telegram.update({
+            where: {
+                account_id: account_id
+            },
+            data: {
+                telegram_username: username
+            }
+        })
+    }
+    catch (e) {
+        return false
+    }
 
-    return telegram
+    return true
 }
 
 /**
