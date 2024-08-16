@@ -19,7 +19,8 @@
           <form method="post" class="needs-validation" novalidate>
             <div class="mb-2">
               <label>Телеграм</label>
-              <input class="form-control w-50" name="telegram_username" type="text" value="{{ telegram_username }}" required />
+              <input class="form-control w-50" name="telegram_username" type="text" value="{{ telegram_username }}" required
+                pattern="^[a-z0-9_]{5,15}$" />
               <div class="invalid-feedback">Пожалуйста, введите username телеграм!</div>
               <div class="valid-feedback">Отлично!</div>
             </div>
