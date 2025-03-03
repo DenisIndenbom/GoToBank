@@ -50,7 +50,7 @@ const validate_verification = ajv.compile(verify_schema);
  * Middleware function to validate request data using a provided validator.
  * 
  * This function acts as a wrapper around a validation function. It validates the request body
- * using the provided validator and returns a 401 error with validation errors if the validation fails.
+ * using the provided validator and returns a 400 error with validation errors if the validation fails.
  * If validation passes, it proceeds to the next middleware in the chain.
  * 
  * @function validate
@@ -59,24 +59,27 @@ const validate_verification = ajv.compile(verify_schema);
  *                              The validator should return `true` if validation passes, or `false` with an `errors` property
  *                              containing validation errors if validation fails.
  * 
- * @returns {Function} - Returns function.
-*/
+ * @returns {Function} - Returns a middleware function.
+ */
 function validate(validator) {
-    wrapper = async (req, res, next) => {
-        validation = validator(req.body);
+    return (req, res, next) => {
+        const valid = validator(req.body);
 
-        if (!validation) {
-            const errors = validation.errors.map(error => ({
-                field: error.instancePath.slice(1), // Remove leading '/'
+        if (!valid) {
+            const errors = validator.errors.map(error => ({
+                field: error.params.missingProperty, // Remove the leading '/' from the instancePath
                 message: error.message
-            }))
+            }));
 
-            return res.status(401).json(validation.errors);
+            return res.status(400).json({
+                state: 'error',
+                code: 'invalid_args',
+                errors: errors
+            });
         }
-        return next();
-    }
 
-    return wrapper
+        return next();
+    };
 }
 
 module.exports = {
