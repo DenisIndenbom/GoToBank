@@ -30,19 +30,23 @@ const debug = config.DEBUG === 'true'
 // Load app resources
 const methods = require('./methods')
 
-const account_router = require('./account')
-const docs_router = require('./docs')
-const main_router = require('./main')
-
-const api_router = require('./api')
 const api_auth = methods.api.req_auth
 
-const auth_router = require('./auth')
 const auth = methods.is_auth.auth
 const not_auth = methods.is_auth.not_auth
 
-// Some tools
-function authHandler(req, res, next) {
+// Load routers
+const routers = require('./routers')
+
+const account_router = routers.account
+const auth_router = routers.auth
+const docs_router = routers.docs
+const main_router = routers.main
+
+const api_router = require('./api')
+
+// Auth handler wrapper
+function auth_handler(req, res, next) {
     return auth(req, res, next, '/auth')
 }
 
@@ -72,14 +76,13 @@ app.use(cors({ origin: true }))
 // Add static folder
 app.use('/static', express.static(__dirname + '/static'))
 
-
 // Add API route
 app.use('/api', api_auth, api_router)
 // Add authorisation routes
 app.use('/auth', not_auth, auth_router)
 app.use('/logout', (req, res) => { req.session.destroy(); res.redirect('/') })
 // Add main app routes
-app.use('/account', authHandler, account_router)
+app.use('/account', auth_handler, account_router)
 app.use('/docs', docs_router)
 app.use('/', main_router)
 

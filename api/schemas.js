@@ -67,7 +67,7 @@ function validate(validator) {
 
         if (!valid) {
             const errors = validator.errors.map(error => ({
-                field: error.params.missingProperty, // Remove the leading '/' from the instancePath
+                field: error.params.missingProperty,
                 message: error.message
             }));
 
