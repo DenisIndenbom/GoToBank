@@ -53,29 +53,30 @@ const validate_verification = ajv.compile(verify_schema);
  * using the provided validator and returns a 401 error with validation errors if the validation fails.
  * If validation passes, it proceeds to the next middleware in the chain.
  * 
- * @async
  * @function validate
  * 
- * @param {Object} req - The Express request object.
- * @param {Object} res - The Express response object.
- * @param {Function} next - The Express next middleware function.
  * @param {Function} validator - A validation function that takes the request body and returns a validation result.
  *                              The validator should return `true` if validation passes, or `false` with an `errors` property
  *                              containing validation errors if validation fails.
  * 
- * @returns {Promise<void>} - Returns a Promise that resolves to the result of the wrapper function.
+ * @returns {Function} - Returns function.
 */
-async function validate(req, res, next, validator) {
-    wrapper = (req, res, next) => {
+function validate(validator) {
+    wrapper = async (req, res, next) => {
         validation = validator(req.body);
 
-        if (!validation)
-            return res.status(401).json(validation.errors);
+        if (!validation) {
+            const errors = validation.errors.map(error => ({
+                field: error.instancePath.slice(1), // Remove leading '/'
+                message: error.message
+            }))
 
+            return res.status(401).json(validation.errors);
+        }
         return next();
     }
 
-    return wrapper(req, res, next)
+    return wrapper
 }
 
 module.exports = {

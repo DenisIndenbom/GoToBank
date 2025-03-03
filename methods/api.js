@@ -31,5 +31,4 @@ async function req_auth(req, res, next) {
 
 module.exports = {
     req_auth: req_auth,
-    validate: validate
 }
