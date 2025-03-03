@@ -1,10 +1,23 @@
 {% extends base %}
 {% block content %}
-  <div class="row d-flex justify-content-center align-items-center mx-auto">
-    <div class="col col-xl-7">
-      {% include "account/widgets/account.html" %}
-      {% include "account/widgets/codes.html" %}
-      {% include "account/widgets/transactions.html" %}
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+      <!-- Account Widget -->
+      <div class="mb-4">
+        {% include "account/widgets/account.html" %}
+      </div>
+
+      <!-- Codes Widget -->
+      <div class="mb-4">
+        {% include "account/widgets/codes.html" %}
+      </div>
+
+      <!-- Transactions Widget -->
+      <div class="mb-4">
+        {% include "account/widgets/transactions.html" %}
+      </div>
     </div>
   </div>
+</div>
 {% endblock %}
