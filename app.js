@@ -72,7 +72,6 @@ app.use(cors({ origin: true }))
 // Add static folder
 app.use('/static', express.static(__dirname + '/static'))
 
-// Add routes
 
 // Add API route
 app.use('/api', api_auth, api_router)
