@@ -248,6 +248,21 @@ async function set_telegram_username(account_id, username) {
 			},
 		});
 	} catch (e) {
+		if (e.code === 'P2025') {
+			try {
+				await prisma.telegram.create({
+					data: {
+						account_id: account_id,
+						telegram_username: username,
+					},
+				});
+
+				return true;
+			} catch (e) {
+				return false;
+			}
+		}
+
 		return false;
 	}
 

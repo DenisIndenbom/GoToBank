@@ -34,8 +34,9 @@ router.get('/callback', async function (req, res) {
 				}),
 			})
 		).json();
+
 		// Fetch telegram data
-		const telegram = await (
+		const telegram_data = await (
 			await fetch(`${config.OAUTH_HOST}/api/telegram`, {
 				headers: new Headers({
 					Authorization: `Bearer ${result.accessToken}`,
@@ -51,9 +52,8 @@ router.get('/callback', async function (req, res) {
 		req.session.username = user.username;
 		req.session.account_id = account.id;
 
-		if (telegram && !(await bank.get_telegram(account.id)).telegram_username) {
-			await bank.set_telegram_username(account.id, telegram.telegram);
-		}
+		if (telegram_data && telegram_data.telegram && !(await bank.get_telegram(account.id)))
+			await bank.set_telegram_username(account.id, telegram_data.telegram);
 
 		return res.redirect('/');
 	} catch (e) {
