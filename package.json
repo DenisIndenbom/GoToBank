@@ -27,7 +27,7 @@
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "moment": "^2.30.1",
-    "node-telegram-bot-api": "^0.63.0",
+    "node-telegram-bot-api": "^0.67.0",
     "nunjucks": "^3.2.4",
     "rand-token": "^1.0.1",
     "yargs-parser": "^21.1.1"
